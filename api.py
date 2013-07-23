@@ -1,0 +1,25 @@
+from libs import app
+import cStringIO
+import gzip
+import time
+
+
+@app.after_request
+def compress(response):
+    if response.status_code != 200 or len(response.data) < 500 \
+    or 'Content-Encoding' in response.headers:
+        return response
+
+    compress_level = 6
+    gzip_buffer = cStringIO.StringIO()
+    gzip_file = gzip.GzipFile(mode='wb', \
+    compresslevel=compress_level, fileobj=gzip_buffer)
+    gzip_file.write(response.data)
+    gzip_file.close()
+    response.data = gzip_buffer.getvalue()
+    response.headers['Content-Encoding'] = 'gzip'
+    response.headers['Content-Length'] = str(len(response.data))
+    return response
+
+
+app.run(host='0.0.0.0', debug=True)
