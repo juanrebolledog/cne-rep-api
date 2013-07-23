@@ -1,16 +1,33 @@
 from libs import db
-from collections import OrderedDict
 
 
-class DictSerializable(object):
-    def _asdict(self):
-        result = OrderedDict()
-        for key in self.__mapper__.c.keys():
-            result[key] = getattr(self, key)
-        return result
+def todict(self):
+    def convert_date(value):
+        return value.strftime("%Y-%m-%d")
+
+    d = {}
+    for c in self.__table__.columns:
+        if isinstance(c.type, db.Date):
+            value = convert_date(getattr(self, c.name))
+        else:
+            value = getattr(self, c.name)
+
+        yield(c.name, value)
 
 
-class Voter(DictSerializable, db.Model):
+def iterfunc(self):
+    """
+    Returns an iterable that supports .next()
+    so we can do dict(sa_instance)
+    """
+    return self.todict()
+
+
+db.Model.todict = todict
+db.Model.__iter__ = iterfunc
+
+
+class Voter(db.Model):
 
     __tablename__ = 'voters'
 
@@ -28,10 +45,6 @@ class Voter(DictSerializable, db.Model):
     parish_code = db.Column(db.Integer(2))
     center_code = db.Column(db.Integer(9))
 
-    def __init__(self, nationality=None, document_id=None):
-        self.nationality = nationality
-        self.document_id = document_id
-
     def __repr__(self):
         return '<Voter "{}-{}">'.format(self.nationality, self.document_id)
 
@@ -47,10 +60,6 @@ class Center(db.Model):
     center_code = db.Column(db.Integer(9))
     name = db.Column(db.String(200))
     address = db.Column(db.String(300))
-
-    def __init__(self, center_code=None, name=None):
-        self.center_code = center_code
-        self.name = name
 
     def __repr__(self):
         return '<Center "{}-{}">'.format(self.center_code, self.name)
