@@ -1,11 +1,16 @@
 from libs import app
 import cStringIO
 import gzip
-import time
+from flask import request
 
 
 @app.after_request
 def compress(response):
+    accept_encoding = request.headers.get('Accept-Encoding', '')
+
+    if 'gzip' not in accept_encoding.lower():
+        return response
+
     if response.status_code != 200 or len(response.data) < 500 \
     or 'Content-Encoding' in response.headers:
         return response
@@ -21,5 +26,5 @@ def compress(response):
     response.headers['Content-Length'] = str(len(response.data))
     return response
 
-
-app.run(host='0.0.0.0', debug=True)
+app.debug=True
+app.run(host='0.0.0.0')
