@@ -1,32 +1,6 @@
 from libs import db
 
 
-def todict(self):
-    def convert_date(value):
-        return value.strftime("%Y-%m-%d")
-
-    d = {}
-    for c in self.__table__.columns:
-        if isinstance(c.type, db.Date):
-            value = convert_date(getattr(self, c.name))
-        else:
-            value = getattr(self, c.name)
-
-        yield(c.name, value)
-
-
-def iterfunc(self):
-    """
-    Returns an iterable that supports .next()
-    so we can do dict(sa_instance)
-    """
-    return self.todict()
-
-
-db.Model.todict = todict
-db.Model.__iter__ = iterfunc
-
-
 class Voter(db.Model):
 
     __tablename__ = 'voters'
@@ -48,6 +22,22 @@ class Voter(db.Model):
     def __repr__(self):
         return '<Voter "{}-{}">'.format(self.nationality, self.document_id)
 
+    def todict(self):
+        return {
+            'nationality': self.nationality,
+            'document_id': self.document_id,
+            'first_last_name': self.first_last_name,
+            'second_last_name': self.second_last_name,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'birth_date': self.birth_date.strftime('%Y-%m-%d'),
+            'gender': self.gender,
+            'state_code': self.state_code,
+            'municipality_code': self.municipality_code,
+            'parish_code': self.parish_code,
+            'center_code': self.center_code
+        }
+
 
 class Center(db.Model):
 
@@ -57,9 +47,19 @@ class Center(db.Model):
     state_code = db.Column(db.Integer(2))
     municipality_code = db.Column(db.Integer(2))
     parish_code = db.Column(db.Integer(2))
-    center_code = db.Column(db.Integer(9))
+    code = db.Column(db.Integer(9))
     name = db.Column(db.String(200))
     address = db.Column(db.String(300))
 
     def __repr__(self):
         return '<Center "{}-{}">'.format(self.center_code, self.name)
+
+    def todict(self):
+        return {
+            'state_code': self.state_code,
+            'municipality_code': self.municipality_code,
+            'parish_code': self.parish_code,
+            'code': self.code,
+            'name': self.name,
+            'address': self.address
+        }
