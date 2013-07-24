@@ -1,0 +1,5 @@
+DBUSER = ''
+DBPASS = ''
+DBHOST = ''
+DBNAME = ''
+SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@{}/{}'.format(DBUSER, DBPASS, DBHOST, DBNAME)
