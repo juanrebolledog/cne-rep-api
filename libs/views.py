@@ -1,14 +1,16 @@
 from libs import app
 from flask import Response, request
 from libs.models import Voter, Center
-import json
+import ujson as json
 import logging
 from werkzeug.contrib.cache import RedisCache
 import hashlib
+from sqlalchemy import asc, desc
+import datetime
 
 
 cache = RedisCache()
-logging.basicConfig()
+logging.basicConfig(filename='db.log')
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
@@ -25,6 +27,46 @@ def search_voters_center(centerid):
         voters = map(Voter.todict, voters)
         cache.set('voters-center-' + str(centerid), voters, timeout=5 * 60)
     return Response(json.dumps(voters), mimetype='application/json')
+
+@app.route('/voters/<int:centerid>/age/<string:calc_type>')
+def search_voters_center_age(centerid, calc_type):
+    calc_types = ['min', 'max', 'avg']
+    calc_type = calc_type.lower()
+    if calc_type in calc_types:
+        def age(dob):
+            today = datetime.date.today()
+            if today.month < dob.month or (today.month == dob.month and today.day < dob.day):
+                return today.year - dob.year - 1
+            else:
+                return today.year - dob.year
+
+        voters = cache.get('voters-center-age-' + str(calc_type) + '-' + str(centerid))
+        voters = None
+        if voters is None:
+            if calc_type == 'max':
+                voter = Voter.query.filter_by(center_code=centerid).order_by(asc(Voter.birth_date)).first()
+                voter_dict = voter.todict()
+                result = {
+                    'birth_date': voter.birth_date.strftime('%Y-%m-%d'),
+                    'age': age(voter.birth_date),
+                    'voter': voter_dict
+                }
+
+            if calc_type == 'min':
+                voter = Voter.query.filter_by(center_code=centerid).order_by(desc(Voter.birth_date)).first()
+                voter_dict = voter.todict()
+                result = {
+                    'birth_date': voter.birth_date.strftime('%Y-%m-%d'),
+                    'age': age(voter.birth_date),
+                    'voter': voter_dict
+                }
+
+            if calc_type == 'avg':
+                pass
+
+            # cache.set('voters-center-age-' + str(type) + '-' + str(centerid), voters, timeout=5 * 60)
+    print result
+    return Response(json.dumps(result), mimetype='application/json')
 
 @app.route('/center/<int:centerid>')
 def search_center(centerid):
