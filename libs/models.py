@@ -14,10 +14,10 @@ class Voter(db.Model):
     middle_name = db.Column(db.String(100))
     birth_date = db.Column(db.Date)
     gender = db.Column(db.String(1))
-    state_code = db.Column(db.Integer(2))
-    municipality_code = db.Column(db.Integer(2))
-    parish_code = db.Column(db.Integer(2))
-    center_code = db.Column(db.Integer(9))
+    state_code = db.Column(db.Integer)
+    municipality_code = db.Column(db.Integer)
+    parish_code = db.Column(db.Integer)
+    center_code = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Voter "{}-{}">'.format(self.nationality, self.document_id)
@@ -44,10 +44,10 @@ class Center(db.Model):
     __tablename__ = 'voting_centers'
 
     id = db.Column(db.Integer, primary_key=True)
-    state_code = db.Column(db.Integer(2))
-    municipality_code = db.Column(db.Integer(2))
-    parish_code = db.Column(db.Integer(2))
-    code = db.Column(db.Integer(9))
+    state_code = db.Column(db.Integer)
+    municipality_code = db.Column(db.Integer)
+    parish_code = db.Column(db.Integer)
+    code = db.Column(db.Integer)
     name = db.Column(db.String(200))
     address = db.Column(db.String(300))
 
