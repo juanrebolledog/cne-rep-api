@@ -26,5 +26,6 @@ def compress(response):
     response.headers['Content-Length'] = str(len(response.data))
     return response
 
-app.debug=True
-app.run(host='0.0.0.0')
+if __name__ == '__main__':
+    app.debug=True
+    app.run(host='0.0.0.0')
