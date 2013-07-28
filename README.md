@@ -16,7 +16,7 @@ Returns the data of the specified voter
 
 #### Example
 
-/voter/12345678
+/voter/5892464
 
 ### Center Voters
 
