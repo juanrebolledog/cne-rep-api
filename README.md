@@ -4,6 +4,8 @@ This is a flask application that serves the REP, which is publicly available [he
 
 As it is right now, it lets clients fetch voter records by providing a document ID, voters from a specific voting center, and various stats of voting centers such as minium/maximum/average age as well as age distribution.
 
+You can test this out without installing anything on [my installation](http://cne.dev.juanrebolledog.me/)
+
 ## API
 
 ### Voter
