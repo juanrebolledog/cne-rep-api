@@ -47,6 +47,7 @@ def search_voters_center_age(centerid, calc_type):
                 voter = Voter.query.filter_by(center_code=centerid).order_by(asc(Voter.birth_date)).first()
                 voter_dict = voter.todict()
                 result = {
+                    'center_code': centerid,
                     'birth_date': voter.birth_date.strftime('%Y-%m-%d'),
                     'age': age(voter.birth_date),
                     'voter': voter_dict
@@ -56,6 +57,7 @@ def search_voters_center_age(centerid, calc_type):
                 voter = Voter.query.filter_by(center_code=centerid).order_by(desc(Voter.birth_date)).first()
                 voter_dict = voter.todict()
                 result = {
+                    'center_code': centerid,
                     'birth_date': voter.birth_date.strftime('%Y-%m-%d'),
                     'age': age(voter.birth_date),
                     'voter': voter_dict
@@ -71,12 +73,18 @@ def search_voters_center_age(centerid, calc_type):
                     avg += group['age'] * group['count']
 
                 avg = float(avg)/float(total)
-                result = avg
+                result = {
+                    'center_code': centerid,
+                    'avg': avg
+                }
 
             if calc_type == 'dist':
                 distribution = Voter.query.with_entities(extract('year', datetime.date.today()) - extract('year', Voter.birth_date), func.count(Voter.birth_date)).filter_by(center_code=centerid).group_by(extract('year', Voter.birth_date)).order_by(desc(Voter.birth_date)).all()
                 voter_dist = map(lambda tuple: {'age': tuple[0], 'count': tuple[1]}, distribution)
-                result = voter_dist
+                result = {
+                    'center_code': centerid,
+                    'dist': voter_dist
+                }
 
             cache.set('voters-center-age-' + str(type) + '-' + str(centerid), voters, timeout=5 * 60)
     return Response(json.dumps(result), mimetype='application/json')
