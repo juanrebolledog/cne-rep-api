@@ -5,7 +5,7 @@ import ujson as json
 import logging
 from werkzeug.contrib.cache import RedisCache
 import hashlib
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, extract, func
 import datetime
 
 
@@ -30,19 +30,19 @@ def search_voters_center(centerid):
 
 @app.route('/voters/<int:centerid>/age/<string:calc_type>')
 def search_voters_center_age(centerid, calc_type):
-    calc_types = ['min', 'max', 'avg']
+    calc_types = ['min', 'max', 'avg', 'dist']
     calc_type = calc_type.lower()
     if calc_type in calc_types:
-        def age(dob):
-            today = datetime.date.today()
-            if today.month < dob.month or (today.month == dob.month and today.day < dob.day):
-                return today.year - dob.year - 1
-            else:
-                return today.year - dob.year
-
         voters = cache.get('voters-center-age-' + str(calc_type) + '-' + str(centerid))
-        voters = None
+
         if voters is None:
+            def age(dob):
+                today = datetime.date.today()
+                if today.month < dob.month or (today.month == dob.month and today.day < dob.day):
+                    return today.year - dob.year - 1
+                else:
+                    return today.year - dob.year
+
             if calc_type == 'max':
                 voter = Voter.query.filter_by(center_code=centerid).order_by(asc(Voter.birth_date)).first()
                 voter_dict = voter.todict()
@@ -62,10 +62,23 @@ def search_voters_center_age(centerid, calc_type):
                 }
 
             if calc_type == 'avg':
-                pass
+                distribution = Voter.query.with_entities(extract('year', datetime.date.today()) - extract('year', Voter.birth_date), func.count(Voter.birth_date)).filter_by(center_code=centerid).group_by(extract('year', Voter.birth_date)).order_by(desc(Voter.birth_date)).all()
+                voter_dist = map(lambda tuple: {'age': tuple[0], 'count': tuple[1]}, distribution)
+                total = 0
+                avg = 0
+                for group in voter_dist:
+                    total += group['count']
+                    avg += group['age'] * group['count']
 
-            # cache.set('voters-center-age-' + str(type) + '-' + str(centerid), voters, timeout=5 * 60)
-    print result
+                avg = float(avg)/float(total)
+                result = avg
+
+            if calc_type == 'dist':
+                distribution = Voter.query.with_entities(extract('year', datetime.date.today()) - extract('year', Voter.birth_date), func.count(Voter.birth_date)).filter_by(center_code=centerid).group_by(extract('year', Voter.birth_date)).order_by(desc(Voter.birth_date)).all()
+                voter_dist = map(lambda tuple: {'age': tuple[0], 'count': tuple[1]}, distribution)
+                result = voter_dist
+
+            cache.set('voters-center-age-' + str(type) + '-' + str(centerid), voters, timeout=5 * 60)
     return Response(json.dumps(result), mimetype='application/json')
 
 @app.route('/center/<int:centerid>')
