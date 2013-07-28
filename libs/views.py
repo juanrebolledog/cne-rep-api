@@ -17,7 +17,12 @@ logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 @app.route('/voter/<int:idnum>')
 def search_voter(idnum):
     voter = Voter.query.filter_by(document_id=idnum).first()
-    return Response(json.dumps(voter.todict()), mimetype='application/json')
+    if voter:
+        voter = voter.todict()
+    else:
+        voter = {}
+    return Response(json.dumps(voter), mimetype='application/json')
+
 
 @app.route('/voters/<int:centerid>')
 def search_voters_center(centerid):
