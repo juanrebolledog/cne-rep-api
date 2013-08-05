@@ -1,4 +1,5 @@
 from libs import app
+from libs.cors import crossdomain
 from flask import Response, request
 from libs.models import Voter, Center
 import ujson as json
@@ -14,7 +15,8 @@ logging.basicConfig(filename='db.log')
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
-@app.route('/voter/<int:idnum>')
+@app.route('/voter/<int:idnum>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*', headers='X-Requested-With, Content-Type, accept')
 def search_voter(idnum):
     voter = Voter.query.filter_by(document_id=idnum).first()
     if voter:
@@ -24,7 +26,8 @@ def search_voter(idnum):
     return Response(json.dumps(voter), mimetype='application/json')
 
 
-@app.route('/voters/<int:centerid>')
+@app.route('/voters/<int:centerid>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*', headers='X-Requested-With, Content-Type, accept')
 def search_voters_center(centerid):
     voters = cache.get('voters-center-' + str(centerid))
     if voters is None:
@@ -33,7 +36,8 @@ def search_voters_center(centerid):
         cache.set('voters-center-' + str(centerid), voters, timeout=5 * 60)
     return Response(json.dumps(voters), mimetype='application/json')
 
-@app.route('/voters/<int:centerid>/age/<string:calc_type>')
+@app.route('/voters/<int:centerid>/age/<string:calc_type>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*', headers='X-Requested-With, Content-Type, accept')
 def search_voters_center_age(centerid, calc_type):
     calc_types = ['min', 'max', 'avg', 'dist']
     calc_type = calc_type.lower()
@@ -94,12 +98,14 @@ def search_voters_center_age(centerid, calc_type):
             cache.set('voters-center-age-' + str(type) + '-' + str(centerid), voters, timeout=5 * 60)
     return Response(json.dumps(result), mimetype='application/json')
 
-@app.route('/center/<int:centerid>')
+@app.route('/center/<int:centerid>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*', headers='X-Requested-With, Content-Type, accept')
 def search_center(centerid):
     center = Center.query.filter_by(code=centerid).first()
     return Response(json.dumps(center.todict()), mimetype='application/json')
 
-@app.route('/centers')
+@app.route('/centers', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*', headers='X-Requested-With, Content-Type, accept')
 def search_centers_filter():
     args = {
         'state_code': request.args.get('state', ''),
