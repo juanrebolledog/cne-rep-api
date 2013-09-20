@@ -1,0 +1,48 @@
+SELECT DATABASE()
+()
+SHOW VARIABLES LIKE 'character_set%%'
+()
+SHOW VARIABLES LIKE 'sql_mode'
+()
+BEGIN (implicit)
+SELECT voters.id AS voters_id, voters.nationality AS voters_nationality, voters.document_id AS voters_document_id, voters.first_last_name AS voters_first_last_name, voters.second_last_name AS voters_second_last_name, voters.first_name AS voters_first_name, voters.middle_name AS voters_middle_name, voters.birth_date AS voters_birth_date, voters.gender AS voters_gender, voters.state_code AS voters_state_code, voters.municipality_code AS voters_municipality_code, voters.parish_code AS voters_parish_code, voters.center_code AS voters_center_code 
+FROM voters 
+WHERE voters.document_id = %s 
+ LIMIT %s
+(17316036, 1)
+SELECT DATABASE()
+()
+SHOW VARIABLES LIKE 'character_set%%'
+()
+SHOW VARIABLES LIKE 'sql_mode'
+()
+BEGIN (implicit)
+SELECT voters.id AS voters_id, voters.nationality AS voters_nationality, voters.document_id AS voters_document_id, voters.first_last_name AS voters_first_last_name, voters.second_last_name AS voters_second_last_name, voters.first_name AS voters_first_name, voters.middle_name AS voters_middle_name, voters.birth_date AS voters_birth_date, voters.gender AS voters_gender, voters.state_code AS voters_state_code, voters.municipality_code AS voters_municipality_code, voters.parish_code AS voters_parish_code, voters.center_code AS voters_center_code 
+FROM voters 
+WHERE voters.document_id = %s 
+ LIMIT %s
+(17316036, 1)
+SELECT DATABASE()
+()
+SHOW VARIABLES LIKE 'character_set%%'
+()
+SHOW VARIABLES LIKE 'sql_mode'
+()
+BEGIN (implicit)
+SELECT voters.id AS voters_id, voters.nationality AS voters_nationality, voters.document_id AS voters_document_id, voters.first_last_name AS voters_first_last_name, voters.second_last_name AS voters_second_last_name, voters.first_name AS voters_first_name, voters.middle_name AS voters_middle_name, voters.birth_date AS voters_birth_date, voters.gender AS voters_gender, voters.state_code AS voters_state_code, voters.municipality_code AS voters_municipality_code, voters.parish_code AS voters_parish_code, voters.center_code AS voters_center_code 
+FROM voters 
+WHERE voters.document_id = %s 
+ LIMIT %s
+(17316036, 1)
+SELECT DATABASE()
+()
+SHOW VARIABLES LIKE 'character_set%%'
+()
+SHOW VARIABLES LIKE 'sql_mode'
+()
+BEGIN (implicit)
+SELECT voters.id AS voters_id, voters.nationality AS voters_nationality, voters.document_id AS voters_document_id, voters.first_last_name AS voters_first_last_name, voters.second_last_name AS voters_second_last_name, voters.first_name AS voters_first_name, voters.middle_name AS voters_middle_name, voters.birth_date AS voters_birth_date, voters.gender AS voters_gender, voters.state_code AS voters_state_code, voters.municipality_code AS voters_municipality_code, voters.parish_code AS voters_parish_code, voters.center_code AS voters_center_code 
+FROM voters 
+WHERE voters.document_id = %s 
+ LIMIT %s
+(17316036, 1)
