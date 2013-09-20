@@ -1,5 +1,4 @@
 .idea
 *.pyc
 config.py
-error.log
-db.log
+app/logs/*
