@@ -7,5 +7,6 @@ SQLAlchemy==0.8.2
 Werkzeug==0.9.1
 itsdangerous==0.22
 redis==2.7.6
+uWSGI==1.9.16
 ujson==1.33
 wsgiref==0.1.2
