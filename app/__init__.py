@@ -17,5 +17,7 @@ if not app.debug:
     from app import app
 
     app.logger.setLevel(logging.INFO)
-    handler = CustomFileHandler(os.path.join(os.path.dirname(__file__), 'logs'), app.logger, logging.FileHandler)
+    handler = CustomFileHandler(
+        os.path.join(os.path.dirname(__file__), 'logs'),
+        app.logger, logging.FileHandler)
     app.logger.addHandler(handler)
