@@ -8,19 +8,13 @@ from sqlalchemy import asc, desc, extract, func
 import datetime
 import os
 from libs.log_handler import CustomFileHandler
-from app import app
+from app import api
 
 
 cache = RedisCache()
-db_logger = logging.getLogger('sqlalchemy.engine')
-db_logger.setLevel(logging.INFO)
-handler = CustomFileHandler(
-    os.path.join(os.path.dirname(__file__), 'logs'),
-    db_logger, logging.FileHandler)
-db_logger.addHandler(handler)
 
 
-@app.route('/voter/<int:idnum>')
+@api.route('/voter/<int:idnum>')
 def search_voter(idnum):
     voter = Voter.query.filter_by(document_id=idnum).first()
     if voter:
@@ -30,7 +24,7 @@ def search_voter(idnum):
     return Response(json.dumps(voter), mimetype='application/json')
 
 
-@app.route('/voters/<int:centerid>')
+@api.route('/voters/<int:centerid>')
 def search_voters_center(centerid):
     voters = cache.get('voters-center-' + str(centerid))
     if voters is None:
@@ -40,7 +34,7 @@ def search_voters_center(centerid):
     return Response(json.dumps(voters), mimetype='application/json')
 
 
-@app.route('/voters/<int:centerid>/age/<string:calc_type>')
+@api.route('/voters/<int:centerid>/age/<string:calc_type>')
 def search_voters_center_age(centerid, calc_type):
     calc_types = ['min', 'max', 'avg', 'dist']
     calc_type = calc_type.lower()
@@ -124,13 +118,13 @@ def search_voters_center_age(centerid, calc_type):
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/center/<int:centerid>')
+@api.route('/center/<int:centerid>')
 def search_center(centerid):
     center = Center.query.filter_by(code=centerid).first()
     return Response(json.dumps(center.todict()), mimetype='application/json')
 
 
-@app.route('/centers')
+@api.route('/centers')
 def search_centers_filter():
     args = {
         'state_code': request.args.get('state', ''),

@@ -1,23 +1,28 @@
+import os
+import logging
+
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
+
 from app import config
 
-app = Flask(__name__)
-app.config.from_object(config)
-db = SQLAlchemy(app)
-
+api = Flask(__name__)
+api.config.from_object(config)
+db = SQLAlchemy(api)
 
 from app import views, models
+from libs.log_handler import CustomFileHandler
 
-if not app.debug:
-    import os
-    import logging
 
-    from libs.log_handler import CustomFileHandler
-    from app import app
+db_logger = logging.getLogger('sqlalchemy.engine')
+db_logger.setLevel(logging.INFO)
+handler = CustomFileHandler(
+    os.path.join(os.path.dirname(__file__), 'logs'),
+    db_logger, logging.FileHandler)
+db_logger.addHandler(handler)
 
-    app.logger.setLevel(logging.INFO)
-    handler = CustomFileHandler(
-        os.path.join(os.path.dirname(__file__), 'logs'),
-        app.logger, logging.FileHandler)
-    app.logger.addHandler(handler)
+api.logger.setLevel(logging.INFO)
+handler = CustomFileHandler(
+    os.path.join(os.path.dirname(__file__), 'logs'),
+    api.logger, logging.FileHandler)
+api.logger.addHandler(handler)
